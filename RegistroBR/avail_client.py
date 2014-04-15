@@ -1,7 +1,7 @@
 #! /usr/local/bin/python
 
 #  Copyright (C) 2013 Registro.br. All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
@@ -10,7 +10,7 @@
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY REGISTRO.BR ``AS IS AND ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIE OF FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -78,14 +78,14 @@ class AvailResponseParser:
             msg += "Tickets: \n"
             for t in self._tickets:
                 msg += "  " + str(t) + "\n"
-                        
+
         elif (self._status == 2):
             msg += "Registered)\n"
             msg += "Expiration Date: "
             if (self._expiration_date == '0'):
                 msg += "Exempt from payment\n"
             else:
-                 msg += self._expiration_date + "\n"
+                msg += self._expiration_date + "\n"
             msg += "Publication Status: " + self._publication_status + "\n"
             msg += "Nameservers: \n"
             for ns in self._nameservers:
@@ -95,7 +95,7 @@ class AvailResponseParser:
                 for s in self._suggestions:
                     msg += " " + s
                 msg += "\n"
-            
+
         elif (self._status == 3):
             msg += "Unavailable)\n"
             msg += "Additional Message: " + self._msg + "\n"
@@ -108,7 +108,7 @@ class AvailResponseParser:
         elif (self._status == 4):
             msg += "Invalid query)\n"
             msg += "Additional Message: " + self._msg + "\n"
-            
+
         elif (self._status == 5):
             msg += "Release process waiting)\n"
 
@@ -117,7 +117,7 @@ class AvailResponseParser:
             msg += "Release Process:\n"
             msg += "  Start date: " + self._release_process_dates[0] + "\n"
             msg += "  End date:   " + self._release_process_dates[1] + "\n"
-            
+
         elif (self._status == 7):
             msg += "Release process in progress with active tickets)\n"
             msg += "Release Process:\n"
@@ -130,13 +130,13 @@ class AvailResponseParser:
         elif (self._status == 8):
             msg += "Error)\n"
             msg += "Additional Message: " + self._msg + "\n"
-            
+
         elif (self._response != ''):
             msg = self._response
-            
+
         else:
             msg = 'No response'
-            
+
         return msg
 
     # Parse a string response
@@ -171,13 +171,13 @@ class AvailResponseParser:
                     self._status = int(items[1])
                 except:
                     return -1
-                
+
                 # Status 8: Error
                 if (self._status == 8):
                     line = buffer.readline().strip()
                     self._msg = line
                     return 0
-                
+
                 self._query_id = items[2]
 
             # Get the fqdn and fqdn_ace
@@ -190,7 +190,7 @@ class AvailResponseParser:
                 self._fqdn = words[0]
             else:
                 return -1
-                
+
             if (self._status == 0 or self._status == 5):
                 # Domain available or waiting release process
                 return 0
@@ -205,7 +205,7 @@ class AvailResponseParser:
                     self._tickets.append(int(t))
 
                 return 0
-                        
+
             # Domain already registered
             elif (self._status == 2):
                 words = line.split('|')
@@ -216,7 +216,7 @@ class AvailResponseParser:
                 self._publication_status = words[1]
                 for i in range(2, len(words)):
                     self._nameservers.append(words[i])
-                
+
                 # Check if there's any suggestion
                 line = buffer.readline().strip()
                 if (line == ''):
@@ -227,12 +227,12 @@ class AvailResponseParser:
                     self._suggestions.append(s + '.br')
 
                 return 0
-            
+
             # Domain unavailable or invalid
             elif (self._status == 3 or self._status == 4):
                 # Just get the message
                 self._msg = line
-            
+
                 if (self._status == 3):
                     # Check if there's any suggestion
                     line = buffer.readline().strip()
@@ -258,7 +258,7 @@ class AvailResponseParser:
                     tickets = line.split('|')
                     for t in tickets:
                         self._tickets.append(int(t))
-                        
+
                 return 0
 
             # Error
@@ -278,7 +278,7 @@ class AvailClient:
     _server = SERVER_ADDR
     _port = SERVER_PORT
     _suggest = 1
-    
+
     def __init__(self,
                  lang = 0,
                  ip = '',
@@ -296,7 +296,7 @@ class AvailClient:
         self._server = server
         self._port = port
         self._suggest = suggest
-        
+
         # Try to get cookie from file
         # If can't open file, send an invalid-cookie query
         try:
@@ -342,10 +342,10 @@ class AvailClient:
                 retries += 1
                 if (retries > MAX_RETRIES):
                     break
-                
+
                 # Send the query
                 sock.sendto(query, addr)
-                
+
             # Set the timeout
             timeout += RETRY_TIMEOUT
             sock.settimeout(timeout)
@@ -355,7 +355,7 @@ class AvailClient:
                 # Timeout: Resend the query and wait a little longer
                 resend = True
                 continue
-                
+
             # Response received. Call the parser
             parser.parse_response(response)
 
@@ -365,7 +365,7 @@ class AvailClient:
                 # Wrong query ID. Just wait for another response
                 resend = False
                 continue
-            
+
             # Check if the cookie was invalid
             if (parser._cookie != ''):
                 # Save the new cookie
@@ -412,10 +412,10 @@ def usage():
     print "\t-c cookie_file: File where the cookie is stored"
     print "\t   (Default: " + COOKIE_FILE + ")"
     print "\t-a proxied_IP: Client IP address being proxied"
-    print "\t-S Enable suggestion in server answer" 
+    print "\t-S Enable suggestion in server answer"
     print "\tfqdn: fully qualified domain name being queried"
-    print 
-    
+    print
+
 if __name__ == "__main__":
     # Get the command line options
     try:
@@ -432,7 +432,7 @@ if __name__ == "__main__":
     cookie_f = COOKIE_FILE
     proxied = ''
     sug = 0
-    
+
     # There must be at least one argument (FQDN)
     if (len(args) == 0):
         usage()
@@ -473,9 +473,8 @@ if __name__ == "__main__":
                      port = server_port,
                      suggest = sug)
     arp = ac.send_query(fqdn)
-    
+
     print arp
     if (debug == True):
         print "*****Response received*****"
         print arp._response
-

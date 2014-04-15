@@ -1,0 +1,32 @@
+version 0.5 (2013-01-15):
+	In PHP client:
+	* Extracted Avail* classes from the command line application
+	* Added an example code targetted for web usage
+	* Minor fix related to language selection
+
+	New Features:
+	* Included new Ruby client.
+
+
+version 0.4 (2009-11-05):
+	New Features:
+	* Included new C++ client.
+	* Language specific clients moved to their on directory
+	* Minor documentation improvements
+
+
+version 0.3 (2008-09-16):
+	New Features:
+	* Implementation of protocol version 1.
+
+
+version 0.2 (2007-02-22):
+	New Features:
+	* Included new Java and PHP clients.
+
+	Bug Fix:
+	* Timeout on Perl implementation wasn't working properly.
+
+
+version 0.1 (2007-02-16):
+	* First public release.

@@ -1,0 +1,127 @@
+                Serviço de Disponibilidade de Domínios
+                          ISAVAIL - Versão 1
+
+Copyright (C) 2009 Registro.br. All rights reserved.
+$Id: README 67 2012-04-11 18:14:25Z mendelson $
+
+Objetivo
+--------
+
+O Serviço de Disponibilidade de Domínios do Registro.br tem como objetivo prover
+ao usuário um mecanismo simples e eficiente para consultar a disponibilidade
+para registro de domínios .br.
+
+Além de informar se o domínio consultado está disponível para registro, o
+Serviço de Disponibilidade de Domínios ainda provê ao usuário informações
+adicionais como, por exemplo, a delegação de domínios já registrados, o
+motivo pelo qual um determinado domínio consultado não pode ser registrado,
+tickets concorrentes ou ainda datas referentes ao processo de liberação quando
+for o caso.
+
+
+Como utilizar
+-------------
+
+O serviço está disponível em whois.registro.br:43 UDP. Para utilizá-lo o usuário
+tem as seguintes opções:
+
+ * Utilizar através do proxy no site do Registro.br
+   O Serviço de Disponibilidade de Domínios está publicado na nossa página
+   inicial - http://registro.br
+
+ * Utilizar um dos nossos clientes-exemplo
+   O Registro.br disponibiliza clientes-exemplo totalmente funcionais escritos
+   nas linguagens Python, Perl, PHP, Java e C++. O download pode ser feito em
+   ftp://ftp.registro.br/pub/isavail/
+
+ * Utilizar implementação própria
+   O usuário ainda tem a opção de implementar seu próprio cliente seguindo as
+   especificações do protocolo descritas no documento Protocolo-ISAVAIL.txt,
+   distribuído junto com este documento.
+
+
+Sobre os clientes-exemplo
+-------------------------
+
+Como executar
+
+  Os clientes-exemplo disponibilizados baseiam-se em linha de comando,
+  ou seja, podem ser executados a partir de um shell. Para tal é necessária
+  a presença de ao menos um interpretador de uma das linguagens suportadas
+  (Python, Perl, PHP ou Java, ver abaixo informações sobre as versões
+  utilizadas nos testes).
+
+  As versões em Python, PHP e Perl não precisam ser compiladas. Utilizando
+  o interpretador correspondente os scripts podem ser executados da seguinte
+  maneira a partir da linha de comando:
+
+  Python
+  ------
+    isavail/python>  python avail_client.py
+
+  PHP
+  ---
+    isavail/php>  php avail_client.php
+
+    Para usar o cliente em sua aplicação, veja um exemplo em php/example.php.
+
+  Perl
+  ----
+    isavail/perl>  perl avail_client.pl
+
+  Java
+  ----
+
+  O cliente em Java precisa ser compilado a partir do diretório 'java'
+  desta distribuição da seguinte maneira:
+
+    isavail/java>  make
+
+  ou, de maneira alternativa:
+
+    isavail/java>  javac JIsAvail.java
+    isavail/java>  jar cmf mainClass JIsAvail.jar *.class br/nic/isavail/*.class
+
+  Após a compilação basta executar o arquivo JIsAvail.jar:
+
+    isavail/java>  java -jar JIsAvail.jar
+
+  C++
+  ---
+
+  O cliente em C++ também precisa ser compilado da seguinte maneira:
+
+    isavail/cpp> make
+
+  ou, de maneira alternativa:
+
+    isavail/cpp>  g++ avail_client.cpp -o avail_client
+
+  Após a compilação basta executar o arquivo avail_client:
+
+    isavail>  ./avail_client
+
+  Ruby
+  ----
+    isavail/ruby> ruby isavail-client.rb
+
+Versões utilizadas para desenvolvimento/testes:
+
+  Python   2.4.3
+  Perl     5.8.8
+  PHP      4.4.5/5.3.6
+  Java     1.4
+  g++      4.3.3
+  ruby     1.9.2
+
+Caminho do cookie-file
+
+  O cookie recebido será armazenado por default em '/tmp/isavail-cookie.txt'.
+  Isso pode ser facilmente alterado na chamada do cliente em linha de comando ou
+  modificando o código do programa em qualquer uma das versões disponibilizadas.
+
+
+Suporte, comentários, críticas e sugestões
+------------------------------------------
+
+ <isavail at registro.br>

@@ -1,0 +1,161 @@
+	       Protocolo de Disponibilidade de Domínios
+			  ISAVAIL - Versão 1
+
+Copyright (C) 2009 Registro.br. All rights reserved.
+$Revision: 1.3 $
+$Date: 2008/09/16 18:54:33 $
+
+Esta é a especificação de um protocolo texto simples utilizado pelo
+serviço de disponibilidade de domínios do Registro.br. Juntamente com
+a específicação estão disponíveis clientes em Python, Perl, PHP e
+Java.
+
+
+Transporte
+----------
+O protocolo tem transporte via UDP porta 43.
+
+
+Sintaxe
+-------
+Perguntas e Respostas são enviadas sempre em um único pacote.
+
+O Query é composto por uma única string sem terminador. A resposta
+pode ser composta por uma ou mais strings separadas por "\r\n". A
+codificação de ambos é ISO-8859-1.
+
+ * Query
+  [ip] <version> <cookie> <lang> <qid> <fqdn> [<sugggest>]
+
+  o ip      Endereço IP do cliente para proxy - opcional e 
+            somente disponível para proxys previamente cadastrados
+  o version Versão do protocolo
+            atualmente somente 0 ou 1
+  o cookie  Cookie criptografico enviado pelo servidor
+            10 bytes representados em hexadecimal minusculo.
+  o lang    Lingua solicitada na resposta
+            0 = EN, 1 = PT
+  o qid     Query ID - 1 a 10 bytes numéricos enviados pelo cliente
+  o fqdn    Domínio
+  o suggest (Somente na versão 1) Indica se o servidor deve ou não
+            enviar sugestões de outros TLDs. 1 = envia, 0 = não envia
+
+  No caso do cliente ainda não possuir um cookie, deverá enviar um
+  query formado corretamente, e no local do cookie, 20 bytes
+  quaisquer. Neste caso receberá uma resposta de cookie inválido
+  contendo um cookie válido que deverá ser armazenado para as
+  consultas subsequentes.
+
+
+ * Answer wrong cookie
+  CK cookie qid
+
+  o cookie  Cookie válido que deverá ser utilizado nas consultas
+            subsequentes
+  o qid     Query ID enviado pelo cliente
+
+
+ * Answer
+  % Copyright registro.br
+  ST <status> <qid>
+  [extra info]
+
+  o status
+	    0 - disponível / available
+	    1 - disponível com tickets concorrentes
+		available with ticket
+	    2 - registrado / registered
+	    3 - indisponível / unavailable
+	    4 - query inválido / invalid query
+	    5 - aguardando processo de liberação
+		release process waiting
+	    6 - disponível no processo de liberação em andamento
+		available release process in progress
+	    7 - disponível no processo de liberação em andamento com 
+		tickets concorrentes
+		available release process in progress with tickets
+	    8 - erro / error  
+
+  o qid     Query ID enviado pelo cliente - exceto com status 8
+
+  o extra info
+    0 - fqdn or fqdn-ace|fqdn (válido para todos os outros status)
+    1 - fqdn
+        ticket1|ticket2|...|ticket10
+    2 - fqdn
+        expiration-date|status|ns1|...|ns5
+        TLD1|TLD2|...|TLDn
+    3 - fqdn
+	<string-reason>
+        TLD1|TLD2|...|TLDn
+    4 - fqdn-query
+	<string-reason>
+    5 - fqdn
+    6 - fqdn
+	begin-date|end-date
+    7 - fqdn
+	begin-date|end-date
+	ticket1|ticket2|...|ticket10
+    8 - <string de mensagem>
+
+
+
+Exemplos
+--------
+ * Query
+  0 8a6e52837fc2c68f7a4a 0 123456789 example.com.br
+ 
+ * Query via proxy
+  [200.160.2.3] 0 8a6e52837fc2c68f7a4a 0 123456789 example.com.br
+
+ * Answer wrong cookie
+  CK 8a6e52837fc2c68f7a4a 12345
+
+ * Answer
+  % Copyright registro.br
+  ST 0 12345
+  example.com.br
+
+  % Copyright registro.br
+  ST 0 12345
+  xn--example-3wa.com.br|exampleã.com.br 
+
+  % Copyright registro.br
+  ST 1 12345
+  example.com.br
+  2567849|2567856
+
+  % Copyright registro.br
+  ST 2 12345
+  example.eng.br
+  2007-03-15|published|fork.example.eng.br|example.eng.br
+  blog|flog|sec3|vlog|wiki
+
+  % Copyright registro.br
+  ST 3 12345
+  example.com.br
+  reserved CG
+  agr|art|esp|etc|far|imb|ind|inf|rec|srv|tmp|tur
+
+  % Copyright registro.br
+  ST 4 12345
+  example.com
+
+  % Copyright registro.br
+  ST 5 12345
+  example.com.br
+
+  % Copyright registro.br
+  ST 6 12345
+  example.com.br
+  2007-01-15 15:00:00|2007-01-30 15:00:00
+
+  % Copyright registro.br
+  ST 7 12345
+  example.com.br
+  2007-01-15 15:00:00|2007-01-30 15:00:00
+  2567849|2567856
+
+  % Copyright registro.br
+  ST 8
+  Query rate limit exceeded

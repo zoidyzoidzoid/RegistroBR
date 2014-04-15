@@ -45,12 +45,11 @@ DEFAULT_COOKIE = '00000000000000000000'
 MAX_RETRIES = 3
 RETRY_TIMEOUT = 5
 
-#############################################################
-##                                                         ##
-##  Class responsible for parsing a Domain Check response  ##
-##                                                         ##
-#############################################################
+
 class AvailResponseParser:
+    """
+    Class responsible for parsing a Domain Check response
+    """
     def __init__(self):
         self._status = -1
         self._query_id = ''
@@ -264,12 +263,11 @@ class AvailResponseParser:
             # Error
             return -1
 
-############################################################
-##                                                        ##
-## Class responsible for sending a query thru the network ##
-##                                                        ##
-############################################################
+
 class AvailClient:
+    """
+    Class responsible for sending a query thru the network
+    """
     _lang = 0
     _ip = ''
     _cookie = DEFAULT_COOKIE
@@ -280,13 +278,13 @@ class AvailClient:
     _suggest = 1
 
     def __init__(self,
-                 lang = 0,
-                 ip = '',
-                 cookie_file = COOKIE_FILE,
-                 version = 1,
-                 server = SERVER_ADDR,
-                 port = SERVER_PORT,
-                 suggest = 1):
+                 lang=0,
+                 ip='',
+                 cookie_file=COOKIE_FILE,
+                 version=1,
+                 server=SERVER_ADDR,
+                 port=SERVER_PORT,
+                 suggest=1):
 
         self._lang = lang
         self._ip = ip
@@ -303,7 +301,7 @@ class AvailClient:
             f = open(self._cookie_file, 'r')
         except IOError:
             # Send a query with an invalid cookie
-            self.send_query(fqdn = 'registro.br')
+            self.send_query(fqdn='registro.br')
         else:
             self._cookie = f.readline()
             f.close()
@@ -319,8 +317,8 @@ class AvailClient:
         query_id = str(random.randint(0, 4294967296))
 
         # Form the query
-        query += str(self._version)  + ' ' + self._cookie + ' ' + \
-                 str(self._lang) + ' ' + query_id + ' ' + fqdn.strip()
+        query += str(self._version) + ' ' + self._cookie + ' ' + \
+            str(self._lang) + ' ' + query_id + ' ' + fqdn.strip()
 
         if (self._version > 0):
             query += ' ' + str(self._suggest)
@@ -350,8 +348,8 @@ class AvailClient:
             timeout += RETRY_TIMEOUT
             sock.settimeout(timeout)
             try:
-                response = sock.recv(MAX_UDP_SIZE)                
-            except socket.timeout:                
+                response = sock.recv(MAX_UDP_SIZE)
+            except socket.timeout:
                 # Timeout: Resend the query and wait a little longer
                 resend = True
                 continue
@@ -360,8 +358,7 @@ class AvailClient:
             parser.parse_response(response)
 
             # Check the query ID
-            if (parser._query_id != query_id and
-                parser._status != 8):
+            if (parser._query_id != query_id and parser._status != 8):
                 # Wrong query ID. Just wait for another response
                 resend = False
                 continue
@@ -388,17 +385,15 @@ class AvailClient:
                     break
 
             break
-        
+
         # Return the filled ResponseParser object
         return parser
 
-#############################################################
-##                                                         ##
-##                Command-line client                      ##
-##                                                         ##
-#############################################################
 
 def usage():
+    """
+    Command-line client
+    """
     print
     print "Usage:"
     print "\t./avail_client.py [-h] [-d] [-l language] [-s server_IP]"
@@ -465,13 +460,13 @@ if __name__ == "__main__":
             sug = 1
 
     # Initialize client object and send query
-    ac = AvailClient(version = 1,
-                     lang = language,
-                     ip = proxied,
-                     cookie_file = cookie_f,
-                     server = server_addr,
-                     port = server_port,
-                     suggest = sug)
+    ac = AvailClient(version=1,
+                     lang=language,
+                     ip=proxied,
+                     cookie_file=cookie_f,
+                     server=server_addr,
+                     port=server_port,
+                     suggest=sug)
     arp = ac.send_query(fqdn)
 
     print arp

@@ -335,7 +335,7 @@ class AvailClient:
         parser = AvailResponseParser()
         while (True):
             # Check the need to (re)send the query
-            if (resend == True):
+            if resend:
                 resend = False
                 retries += 1
                 if (retries > MAX_RETRIES):
@@ -470,6 +470,6 @@ if __name__ == "__main__":
     arp = ac.send_query(fqdn)
 
     print arp
-    if (debug == True):
+    if debug:
         print "*****Response received*****"
         print arp._response
